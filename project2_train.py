@@ -1,4 +1,5 @@
 # import the packages
+# import the packages
 import argparse
 import logging
 import sys
@@ -55,7 +56,7 @@ def train_net(net, trainloader, valloader,criterion,optimizer,scheduler,epochs=2
 
         # print statistics
             train_running_loss += loss.item()
-            if i % 100 == 99:    # print every 2000 mini-batches
+            if i % 50 == 49:    # print every 2000 mini-batches
                 print('[%d, %5d] loss: %.3f' %
                       (epoch + 1, i + 1, train_running_loss / 2000))
                 train_running_loss = 0.0
@@ -116,11 +117,11 @@ val_set = ImageFolder(train_image_path, train_transform)
 
 
 
-trainloader = torch.utils.data.DataLoader(train_set, batch_size=2,
+trainloader = torch.utils.data.DataLoader(train_set, batch_size=4,
                                          shuffle=True, num_workers=2)
 
 
-valloader = torch.utils.data.DataLoader(val_set, batch_size=2,
+valloader = torch.utils.data.DataLoader(val_set, batch_size=4,
                                          shuffle=True, num_workers=2)
 ####################################
 
