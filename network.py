@@ -87,7 +87,7 @@ class AddCla(nn.Module):
         return output
 
 class Network(nn.Module):
-    def __init__(self, num_class=10):
+    def __init__(self, num_class=17):
         super(Network, self).__init__()
         
         self.layer_1 = nn.Sequential(
