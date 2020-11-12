@@ -29,15 +29,13 @@ def parse_args():
     return pargs
 
 # training process. 
-def train_net(net, trainloader, valloader,criterion,optimizer,scheduler,epochs=8):
+def train_net(net, trainloader, valloader,criterion,optimizer,scheduler,epochs=2):
 ########## ToDo: Your codes goes below #######
     net = net.train()
     for epoch in range(epochs):
-        if type(scheduler).__name__ != 'NoneType':
-            scheduler.step()
+        scheduler.step()
 
         train_running_loss = 0.0
-        vali_running_loss = 0.0
         correct = 0
         total = 0
         for i, data in enumerate(trainloader, 0):
@@ -57,36 +55,25 @@ def train_net(net, trainloader, valloader,criterion,optimizer,scheduler,epochs=8
 
         # print statistics
             train_running_loss += loss.item()
-        print('epoch: %d, training loss: %.3f' %(epoch,
-    train_running_loss / len(trainloader)))
-        train_running_loss = 0.0
-        for i, data in enumerate(valloader, 0):
-        # get the inputs
+            if i % 100 == 99:    # print every 2000 mini-batches
+                print('[%d, %5d] loss: %.3f' %
+                      (epoch + 1, i + 1, train_running_loss / 2000))
+                train_running_loss = 0.0
+        
+
+        for data in valloader:
             inputs, labels = data
             if args.cuda:
                 inputs, labels = inputs.cuda(), labels.cuda()
-        # zero the parameter gradients
-            optimizer.zero_grad()
-
-        # forward + backward + optimize
             outputs = net(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-        # print statistics
-            if args.cuda:
-                loss = loss.cpu()
-            vali_running_loss += loss.item()
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
             
-        print('[%d] validation_loss: %.3f' %
-                  (epoch + 1, vali_running_loss / 20))
+        
         print('Accuracy of validation: %d %%' % (
                      100 * correct / total))
-        vail_running_loss = 0.0
-        val_accuracy = correct / total
+        val_accuracy = 100 * correct / total
     print('Finished Training')
     
     # val_accuracy is the validation accuracy of each epoch. You can save your model base on the best validation accuracy.
@@ -119,12 +106,15 @@ train_transform = transforms.Compose([
 # Define the training dataset and dataloader.
 # You can make some modifications, e.g. batch_size, adding other hyperparameters, etc.
 
-train_image_path = 'D:/project2/5307Project2/train' 
-#validation_image_path = '../validation/' 
+train_image_path = 'D:/project2/5307Project2/train/' 
 
-trainset = ImageFolder(train_image_path, train_transform)
+validation_image_path = 'D:/project2/5307Project2/test/' 
 
-train_set, val_set = torch.utils.data.random_split(trainset, [1000-64, 151])
+train_set = ImageFolder(train_image_path, train_transform)
+val_set = ImageFolder(train_image_path, train_transform)
+
+
+
 
 trainloader = torch.utils.data.DataLoader(train_set, batch_size=2,
                                          shuffle=True, num_workers=2)
@@ -153,7 +143,8 @@ if __name__ == '__main__':
     data = next(iter(trainloader))
     print(data[0].mean())
     print(data[0].std())
-    print("print 1")
     val_acc = train_net(network, trainloader, valloader,criterion,optimizer,scheduler)
 
     print("final validation accuracy:", val_acc)
+
+# ==================================

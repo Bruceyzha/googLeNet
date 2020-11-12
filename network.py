@@ -116,8 +116,7 @@ class Network(nn.Module):
         self.layer18_19 = Inception(832, 256, 160, 320, 32, 128, 128)
         self.layer20_21 = Inception(832, 384, 192, 384, 48, 128, 128)
         self.pooling = nn.AvgPool2d(7, 1)
-        self.layer22 = nn.Linear(1024, 1000)
-        self.linear = nn.Linear(1024, num_class)
+        self.layer22 = nn.Linear(1024, num_class)
 
     def forward(self, x):
         x = self.layer_1(x)
